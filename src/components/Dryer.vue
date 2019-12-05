@@ -1,38 +1,68 @@
 <template>
-  <div class="main">
-    <div class="l">
-      <div class="l__face l__face--front">
-        <div class="l__control"></div>
-        <div class="l__control"></div>
-        <div class="l__buttons">
-          <div class="l__button"></div>
-          <div class="l__button"></div>
-          <div class="l__button"></div>
-        </div>
-        <div class="l__c1">
-          <div class="l__c2">
-            <transition name="clothes" class="l__clothes" :duration="300">
-              <div class="l__clothes">
+  <div>
+    <button @click="toggleOnOff()">On/Off</button>
+    <div class="main">
+      <div
+        v-bind:class="[L]"
+        :style="[!isSpinning ? { animationDuration: '0.05s' } : null]"
+      >
+        <div class="l__face l__face--front">
+          <div class="l__control"></div>
+          <div class="l__control"></div>
+          <div class="l__buttons">
+            <div class="l__button"></div>
+            <div class="l__button"></div>
+            <div class="l__button"></div>
+          </div>
+          <div class="l__c1">
+            <div class="l__c2">
+              <!-- <transition name="clothes" class="l__clothes" :duration="300"> -->
+              <!-- <div
+              class="l__clothes"
+              v-bind:style="{ animationDuration: animate }"
+            > -->
+              <div ref="box" class="l__clothes">
                 <div class="l__clothes-i"></div>
                 <div class="l__clothes-i"></div>
               </div>
-            </transition>
+            </div>
           </div>
         </div>
+        <div class="l__face l__face--back"></div>
+        <div class="l__face l__face--right"></div>
+        <div class="l__face l__face--left"></div>
+        <div class="l__face l__face--top"></div>
+        <div class="l__face l__face--bottom"></div>
       </div>
-      <div class="l__face l__face--back"></div>
-      <div class="l__face l__face--right"></div>
-      <div class="l__face l__face--left"></div>
-      <div class="l__face l__face--top"></div>
-      <div class="l__face l__face--bottom"></div>
-    </div>
-    <div class="s">
-      <div class="l__face s__shadow"></div>
+      <div
+        ref="shadow"
+        v-bind:class="[S]"
+        :style="[!isSpinning ? { animationDuration: '0.05s' } : null]"
+      >
+        <div class="l__face s__shadow"></div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import {
+  TimelineLite,
+  TweenLite,
+  TweenMax,
+  Back,
+  Power1,
+  Power3,
+  Linear,
+  Expo
+} from "gsap";
+function range(start, end) {
+  return Array(end - start + 1)
+    .fill()
+    .map((_, idx) => start + idx)
+    .reverse();
+}
+
 export default {
   name: "HelloWorld",
   props: {
@@ -40,20 +70,125 @@ export default {
   },
   data() {
     return {
-      rotateMin: -3,
-      rotateMax:
-        "perspective(2000px) rotate3d(-500, -1000, 0, 30deg) translateY(-10px) translateX(5px) rotateZ(5deg)"
+      clothes: "l__clothes",
+      isSpinning: true,
+      L: "l",
+      lSpine: "",
+      S: "s",
+      sSpine: "",
+      // spinUp: this.cssProps(),
+      animate: "0.8s",
+      spinner: range(3, 8),
+      currentMsgId: 0,
+      currentMessage: [],
+      sentMessages: [],
+      delayBy: 1000,
+      maxVisible: 4,
+      startIndexVis: 0,
+      endIndexVis: 0,
+      start: true
     };
   },
+  created() {
+    this.endIndexVis = this.maxVisible;
+  },
+  mounted() {
+    this.spinStart();
+  },
   computed: {
-    // cssProps() {
-    //   return {
-    //     "--rotate-max":
-    //       "perspective(2000px) rotate3d(-500, -1000, 0, 30deg) translateY(-10px) translateX(5px) rotateZ(5deg)",
-    //     "--rotate-min":
-    //       "perspective(2000px) rotate3d(-500, -1000, 100, 30deg) translateY(0) translateX(0) rotateZ(-3deg)"
-    //   };
-    // }
+    visibleMessages() {
+      return this.batch(this.sentMessages);
+    },
+    spin() {
+      const { box, shadow } = this.$refs;
+      const timeline = new TimelineLite();
+      return { box, timeline, shadow };
+    }
+  },
+  methods: {
+    toggleOnOff() {
+      console.log("click!!!", this.isSpinning);
+      this.isSpinning ? this.spinStart() : this.spinStop();
+    },
+    spinStart() {
+      const { box, timeline } = this.spin;
+      this.isSpinning = false;
+      console.log("ON");
+      timeline.play();
+      // this.lSpine = "machine-movement";
+      // this.sSpine = "shadow-movement";
+      timeline.to(box, 0.9, { rotation: 30, ease: Power1.easeIn });
+      timeline.to(box, 0.3, { rotation: 360, repeat: -1, pause: false }, "-=2");
+      timeline.to(box, 4, { rotation: 1 }, "-=5");
+    },
+    spinStop() {
+      const { box, timeline, shadow } = this.spin;
+      this.isSpinning = true;
+      console.log("OFF", shadow);
+      // timeline.pause();
+      timeline.to(
+        box,
+        0.3,
+        {
+          rotation: 480,
+          ease: Linear.easeOut
+        },
+        timeline.clear()
+      );
+      // this.lSpine = "disable-animation";
+      // this.sSpine = "disable-animation";
+    },
+    /* TIMER - Not using */
+    startSendingMessages() {
+      this.start = true;
+      console.log("startSendingMessages called", this.start);
+      this.sendMessages();
+    },
+    stopSendingMessages() {
+      this.start = false;
+      console.log(this.start, "so stop");
+    },
+    delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
+    async sendMessages() {
+      if (this.start) {
+        if (this.currentMsgId < this.spinner.length) {
+          const nextMsgId = this.currentMsgId;
+          await this.sendNextMessage(nextMsgId);
+          this.sendMessages();
+        } else {
+          console.log("No more messages to send!");
+          this.stopSendingMessages();
+        }
+      }
+    },
+    async sendNextMessage(nextMsgId) {
+      this.currentMessage = this.spinner.slice(this.currentMsgId, nextMsgId);
+      this.currentMsgId++;
+      console.log("currentMsgId updated:", this.currentMsgId, nextMsgId);
+      // this.animate = `0.${this.spinner[nextMsgId]}s`;
+      await this.delay(1000 * this.spinner[nextMsgId]);
+      this.animate = `0.${this.spinner[nextMsgId]}s`;
+      if (this.sentMessages.length >= this.maxVisible) {
+        this.startIndexVis++;
+        this.endIndexVis++;
+      }
+      return this.sentMessages.push(this.currentMessage[0]);
+    },
+    // Display messages in batches of maxVisible size
+    batch(sentMsgs) {
+      return sentMsgs.slice(this.startIndexVis, this.endIndexVis);
+    },
+    reset() {
+      this.start = false;
+      console.log("reset!");
+      this.currentMsgId = 0;
+      this.currentMessage = [];
+      this.sentMessages = [];
+      this.startIndexVis = 0;
+      this.endIndexVis = this.maxVisible;
+    }
   }
 };
 </script>
@@ -65,6 +200,11 @@ export default {
     translateY(-10px) translateX(5px) rotateZ(5deg);
 }
 
+.disable-animation {
+  animation: none !important;
+  -webkit-animation: none !important;
+}
+
 .main {
   display: flex;
   justify-content: center;
@@ -72,6 +212,10 @@ export default {
   position: relative;
   width: 400px;
   height: 400px;
+}
+
+.machine-movement {
+  animation: l 0.05s ease-in-out infinite alternate;
 }
 
 .l,
@@ -82,7 +226,8 @@ export default {
   z-index: 300;
   transform-style: preserve-3d;
   transform: perspective(2000px) rotate3d(-500, -1000, 100, 30deg);
-  animation: l 0.05s ease-in-out infinite alternate;
+  /* animation: l 0.05s ease-in-out infinite alternate; */
+  animation: l ease-in-out infinite alternate;
 }
 
 .l__face,
@@ -240,7 +385,8 @@ export default {
   width: 10px;
   height: 10px;
   z-index: 100;
-  animation: clothes 0.3s linear infinite;
+  /* animation: clothes 0.3s linear infinite; */
+  animation: clothes linear infinite;
 }
 
 .l__clothes-i,
@@ -265,6 +411,11 @@ export default {
   animation: none;
   z-index: -100;
 }
+
+.shadow-movement {
+  animation: shadow 0.05s ease-in-out infinite alternate;
+}
+
 .s__shadow {
   transform: rotateX(-90deg) translateZ(50px) translateY(45px) translateX(25px)
     skewX(10deg);
@@ -272,7 +423,8 @@ export default {
   height: 300px;
   border-radius: 5px;
   background-color: #f36955;
-  animation: shadow 0.05s ease-in-out infinite alternate;
+  /* animation: shadow 0.05s ease-in-out infinite alternate; */
+  animation: shadow ease-in-out infinite alternate;
 }
 
 /**/
