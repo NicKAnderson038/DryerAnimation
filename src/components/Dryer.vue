@@ -11,10 +11,12 @@
         </div>
         <div class="l__c1">
           <div class="l__c2">
-            <div class="l__clothes">
-              <div class="l__clothes-i"></div>
-              <div class="l__clothes-i"></div>
-            </div>
+            <transition name="clothes" class="l__clothes" :duration="300">
+              <div class="l__clothes">
+                <div class="l__clothes-i"></div>
+                <div class="l__clothes-i"></div>
+              </div>
+            </transition>
           </div>
         </div>
       </div>
@@ -35,13 +37,33 @@ export default {
   name: "HelloWorld",
   props: {
     msg: String
+  },
+  data() {
+    return {
+      rotateMin: -3,
+      rotateMax:
+        "perspective(2000px) rotate3d(-500, -1000, 0, 30deg) translateY(-10px) translateX(5px) rotateZ(5deg)"
+    };
+  },
+  computed: {
+    // cssProps() {
+    //   return {
+    //     "--rotate-max":
+    //       "perspective(2000px) rotate3d(-500, -1000, 0, 30deg) translateY(-10px) translateX(5px) rotateZ(5deg)",
+    //     "--rotate-min":
+    //       "perspective(2000px) rotate3d(-500, -1000, 100, 30deg) translateY(0) translateX(0) rotateZ(-3deg)"
+    //   };
+    // }
   }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 /* Variables */
+:root {
+  --rotate-max: perspective(2000px) rotate3d(-500, -1000, 0, 30deg)
+    translateY(-10px) translateX(5px) rotateZ(5deg);
+}
 
 .main {
   display: flex;
@@ -62,6 +84,7 @@ export default {
   transform: perspective(2000px) rotate3d(-500, -1000, 100, 30deg);
   animation: l 0.05s ease-in-out infinite alternate;
 }
+
 .l__face,
 .s__face {
   position: absolute;
@@ -69,6 +92,7 @@ export default {
   width: 200px;
   z-index: 10;
 }
+
 .l__face--front,
 .s__face--front {
   display: flex;
@@ -79,32 +103,38 @@ export default {
   border-top: 5px solid #d3fffd;
   border-bottom: 5px solid #c8cfd4;
 }
+
 .l__face--back,
 .s__face--back {
   transform: rotateY(180deg) translateZ(100px);
   background-color: #c8cfd4;
 }
+
 .l__face--right,
 .s__face--right {
   transform: rotateY(90deg) translateZ(100px);
   background-image: linear-gradient(to bottom, #5ecd9d 20%, #c8cfd4 20%);
   border-top: 5px solid #85d9b5;
 }
+
 .l__face--left,
 .s__face--left {
   transform: rotateY(-90deg) translateZ(100px);
   background-color: #feffff;
 }
+
 .l__face--top,
 .s__face--top {
   transform: rotateX(90deg) translateZ(100px);
   background-color: #d3fffd;
 }
+
 .l__face--bottom,
 .s__face--bottom {
   transform: rotateX(-90deg) translateZ(100px);
   background-color: #c8cfd4;
 }
+
 .l__c1,
 .s__c1 {
   display: flex;
@@ -119,6 +149,7 @@ export default {
     1px 1px 1px 1px rgba(200, 207, 212, 0.5);
   background-image: linear-gradient(200deg, #5ecd9d 50%, #54ffb7 65%);
 }
+
 .l__c2,
 .s__c2 {
   position: absolute;
@@ -129,6 +160,7 @@ export default {
   background-color: #e6f4f9;
   overflow: hidden;
 }
+
 .l__c2::before,
 .s__c2::before {
   content: "";
@@ -144,6 +176,7 @@ export default {
     rgba(138, 157, 165, 0.4)
   );
 }
+
 .l__c2::after,
 .s__c2::after {
   content: "";
@@ -159,6 +192,7 @@ export default {
     rgba(165, 187, 197, 0.1) 60%
   );
 }
+
 .l__control,
 .s__control {
   position: absolute;
@@ -170,10 +204,12 @@ export default {
   background-color: #feffff;
   box-shadow: inset -1px 0 0 #c8cfd4, 3px 2px 0 #5ecd9d;
 }
+
 .l__control:nth-of-type(2),
 .s__control:nth-of-type(2) {
   left: 55px;
 }
+
 .l__button,
 .s__button {
   position: absolute;
@@ -185,14 +221,17 @@ export default {
   box-shadow: inset -1px 0 0 #c8cfd4, 1px 1px 0 #c8cfd4;
   background-color: #f36955;
 }
+
 .l__button:nth-of-type(2),
 .s__button:nth-of-type(2) {
   left: 110px;
 }
+
 .l__button:nth-of-type(3),
 .s__button:nth-of-type(3) {
   left: 120px;
 }
+
 .l__clothes,
 .s__clothes {
   position: absolute;
@@ -203,6 +242,7 @@ export default {
   z-index: 100;
   animation: clothes 0.3s linear infinite;
 }
+
 .l__clothes-i,
 .s__clothes-i {
   position: absolute;
@@ -212,6 +252,7 @@ export default {
   background-color: #ffb791;
   border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;
 }
+
 .l__clothes-i:nth-of-type(2),
 .s__clothes-i:nth-of-type(2) {
   left: 20px;
