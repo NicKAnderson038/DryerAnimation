@@ -1,24 +1,10 @@
-# dryer-animation
+# Dryer Animation
 
-## Project setup
-```
-yarn install
-```
+### Dryer animation with JS, CSS & HTML
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+Check out the <a href="https://nickanderson038.github.io/DryerAnimation/" target="_blank">Dryer</a> animation!
 
-### Compiles and minifies for production
-```
-yarn build
-```
+<br>
+<br>
 
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+<img src="https://cdn4.iconfinder.com/data/icons/hotel-facilities-2/500/dryer-512.png" width="300">
