@@ -1,11 +1,15 @@
 <template>
   <div class="ctrl">
-    <span v-show="!isSpinning" class="nortification animateOpen">{{
+    <span v-show="!isSpinning" class="nortification animateOpen">
+      {{
       notificationStart
-    }}</span>
-    <span v-show="isSpinning" class="nortification animateOpen">{{
+      }}
+    </span>
+    <span v-show="isSpinning" class="nortification animateOpen">
+      {{
       notificationEnd
-    }}</span>
+      }}
+    </span>
   </div>
 </template>
 
@@ -17,13 +21,6 @@ export default {
     notificationText1: String,
     notificationText2: String
   },
-  //   data() {
-  //     return {
-  //       notificationText1: "Dryer Running!",
-  //       notificationText2: "Finished!",
-  //       isSpinning: true
-  //     };
-  //   },
   computed: {
     notificationStart() {
       return this.notificationText1;
