@@ -5,7 +5,8 @@ set -e
 
 # build
 echo Building. this may take a minute...
-yarn run build
+# yarn run build
+yarn run build:prod
 
 # overide gitignore
 git add -f dist

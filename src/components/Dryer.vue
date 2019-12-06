@@ -5,7 +5,13 @@
       notificationText1="Dryer Running!"
       notificationText2="Finished!"
     />
-    <button @click="toggleOnOff()">On/Off</button>
+    <a
+      type="button"
+      class="btn-sample"
+      :style="buttonStyle"
+      @click="toggleOnOff()"
+      >{{ isSpinning ? "ON" : "OFF" }}</a
+    >
     <div class="main">
       <div
         class="l"
@@ -52,16 +58,7 @@
 </template>
 
 <script>
-import {
-  TimelineLite,
-  TweenLite,
-  TweenMax,
-  Back,
-  Power1,
-  Power3,
-  Linear,
-  Expo
-} from "gsap";
+import { TimelineLite, Power1, Linear } from "gsap";
 import Notification from "./Notification";
 function range(start, end) {
   return Array(end - start + 1)
@@ -102,6 +99,12 @@ export default {
     this.spinStart();
   },
   computed: {
+    buttonStyle() {
+      return {
+        "--color": this.isSpinning ? "blue" : "#f36955",
+        "--color-hover": "#434343"
+      };
+    },
     visibleMessages() {
       return this.batch(this.sentMessages);
     },
@@ -195,10 +198,27 @@ export default {
 </script>
 
 <style scoped>
-/* Variables */
-/* :root {
-  font-size: calc(48px + (60 - 48) * (100vw - 320px) / (1024 - 320));
-} */
+.btn-sample {
+  color: #fff;
+  font-family: Comic Sans MS, Comic Sans, cursive;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: var(--color);
+  padding: 20px;
+  border-radius: 5px;
+  display: inline-block;
+  border: none;
+  transition: all 0.4s ease 0s;
+}
+
+.btn-sample:hover {
+  background: var(--color-hover);
+  letter-spacing: 1px;
+  -webkit-box-shadow: 0px 5px 40px -10px rgba(0, 0, 0, 0.57);
+  -moz-box-shadow: 0px 5px 40px -10px rgba(0, 0, 0, 0.57);
+  box-shadow: 5px 40px -10px rgba(0, 0, 0, 0.57);
+  transition: all 0.4s ease 0s;
+}
 
 .running-lights {
   width: 100%;
@@ -221,7 +241,7 @@ export default {
 
 @keyframes blinkingText {
   0% {
-    background-color: rgb(0, 157, 255);
+    background-color: rgb(190, 224, 245);
     box-shadow: inset -1px 0 0 #50c3ed, 1px 1px 0 #50c3ed;
   }
   50% {
