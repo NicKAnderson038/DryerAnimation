@@ -1,26 +1,56 @@
 <template>
   <div>
+    <div class="ctrl">
+      <span v-show="!isSpinning" class="nortification animateOpen">{{
+        notificationStart
+      }}</span>
+      <span v-show="isSpinning" class="nortification animateOpen">{{
+        notificationEnd
+      }}</span>
+    </div>
     <button @click="toggleOnOff()">On/Off</button>
     <div class="main">
       <div
-        v-bind:class="[L]"
+        class="l"
         :style="[!isSpinning ? { animationDuration: '0.05s' } : null]"
       >
         <div class="l__face l__face--front">
           <div class="l__control"></div>
           <div class="l__control"></div>
           <div class="l__buttons">
-            <div class="l__button"></div>
-            <div class="l__button"></div>
-            <div class="l__button"></div>
+            <div
+              class="l__button"
+              v-for="(item, index) in runningLights"
+              v-bind:key="item"
+            >
+              <span
+                v-if="!isSpinning"
+                :class="['running-lights', `running-light-${index}`]"
+              ></span>
+            </div>
           </div>
+          <!-- <div class="l__buttons">
+            <div class="l__button">
+              <span
+                v-if="!isSpinning"
+                class="running-lights running-light-0"
+              ></span>
+            </div>
+            <div class="l__button">
+              <span
+                v-if="!isSpinning"
+                class="running-lights running-light-1"
+              ></span>
+            </div>
+            <div class="l__button">
+              <span
+                v-if="!isSpinning"
+                class="running-lights running-light-2"
+              ></span>
+            </div>
+          </div> -->
           <div class="l__c1">
             <div class="l__c2">
-              <!-- <transition name="clothes" class="l__clothes" :duration="300"> -->
-              <!-- <div
-              class="l__clothes"
-              v-bind:style="{ animationDuration: animate }"
-            > -->
               <div ref="box" class="l__clothes">
                 <div class="l__clothes-i"></div>
                 <div class="l__clothes-i"></div>
@@ -34,12 +64,11 @@
         <div class="l__face l__face--top"></div>
         <div class="l__face l__face--bottom"></div>
       </div>
-      <div
-        ref="shadow"
-        v-bind:class="[S]"
-        :style="[!isSpinning ? { animationDuration: '0.05s' } : null]"
-      >
-        <div class="l__face s__shadow"></div>
+      <div class="s">
+        <div
+          class="l__face s__shadow"
+          :style="[!isSpinning ? { animationDuration: '0.05s' } : null]"
+        ></div>
       </div>
     </div>
   </div>
@@ -64,19 +93,17 @@ function range(start, end) {
 }
 
 export default {
-  name: "HelloWorld",
+  name: "DryerAnimation",
   props: {
     msg: String
   },
   data() {
     return {
+      notificationText1: "Dryer Running!",
+      notificationText2: "Finished!",
       clothes: "l__clothes",
       isSpinning: true,
-      L: "l",
-      lSpine: "",
-      S: "s",
-      sSpine: "",
-      // spinUp: this.cssProps(),
+      /* setTimeout */
       animate: "0.8s",
       spinner: range(3, 8),
       currentMsgId: 0,
@@ -99,32 +126,36 @@ export default {
     visibleMessages() {
       return this.batch(this.sentMessages);
     },
+    runningLights() {
+      return ["one", "two", "three"];
+    },
     spin() {
-      const { box, shadow } = this.$refs;
+      const { box } = this.$refs;
       const timeline = new TimelineLite();
-      return { box, timeline, shadow };
+      return { box, timeline };
+    },
+    notificationStart() {
+      return this.notificationText1;
+    },
+    notificationEnd() {
+      return this.notificationText2;
     }
   },
   methods: {
     toggleOnOff() {
-      console.log("click!!!", this.isSpinning);
       this.isSpinning ? this.spinStart() : this.spinStop();
     },
     spinStart() {
       const { box, timeline } = this.spin;
       this.isSpinning = false;
-      console.log("ON");
       timeline.play();
-      // this.lSpine = "machine-movement";
-      // this.sSpine = "shadow-movement";
       timeline.to(box, 0.9, { rotation: 30, ease: Power1.easeIn });
       timeline.to(box, 0.3, { rotation: 360, repeat: -1, pause: false }, "-=2");
       timeline.to(box, 4, { rotation: 1 }, "-=5");
     },
     spinStop() {
-      const { box, timeline, shadow } = this.spin;
+      const { box, timeline } = this.spin;
       this.isSpinning = true;
-      console.log("OFF", shadow);
       // timeline.pause();
       timeline.to(
         box,
@@ -135,8 +166,6 @@ export default {
         },
         timeline.clear()
       );
-      // this.lSpine = "disable-animation";
-      // this.sSpine = "disable-animation";
     },
     /* TIMER - Not using */
     startSendingMessages() {
@@ -167,7 +196,6 @@ export default {
       this.currentMessage = this.spinner.slice(this.currentMsgId, nextMsgId);
       this.currentMsgId++;
       console.log("currentMsgId updated:", this.currentMsgId, nextMsgId);
-      // this.animate = `0.${this.spinner[nextMsgId]}s`;
       await this.delay(1000 * this.spinner[nextMsgId]);
       this.animate = `0.${this.spinner[nextMsgId]}s`;
       if (this.sentMessages.length >= this.maxVisible) {
@@ -195,14 +223,98 @@ export default {
 
 <style scoped>
 /* Variables */
-:root {
-  --rotate-max: perspective(2000px) rotate3d(-500, -1000, 0, 30deg)
-    translateY(-10px) translateX(5px) rotateZ(5deg);
+/* :root {
+  font-size: calc(48px + (60 - 48) * (100vw - 320px) / (1024 - 320));
+} */
+
+.ctrl {
+  width: 100%;
+  position: relative;
+  transform: rotate3d(5, 8, 0, 0.1turn);
 }
 
-.disable-animation {
-  animation: none !important;
-  -webkit-animation: none !important;
+.nortification {
+  display: block;
+  font-family: Comic Sans MS, Comic Sans, cursive;
+  font-size: 14px;
+  width: 180px;
+  padding: 5px 0;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -90px;
+  box-sizing: border-box;
+  border-radius: 15px;
+  background-color: #fff;
+  color: #85d9b5;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 3px 0 0 rgba(0, 0, 0, 0.2), 2px -3px 0 #d3fffd;
+}
+
+.animateOpen {
+  -webkit-animation: moveOpen 4s;
+  /* -webkit-animation-iteration-count: infinite; */
+  -webkit-animation-fill-mode: forwards;
+}
+
+/* Safari and Chrome */
+@keyframes moveOpen {
+  from {
+    -webkit-transform: translate(0, -100px);
+  }
+  10% {
+    -webkit-transform: translate(0, 20px);
+  }
+  12% {
+    -webkit-transform: translate(0, 22px);
+  }
+  16% {
+    -webkit-transform: translate(0, 20px);
+  }
+  80% {
+    -webkit-transform: translate(0, 20px);
+  }
+  85% {
+    -webkit-transform: translate(0, 25px);
+  }
+  to {
+    -webkit-transform: translate(0, -100vh);
+  }
+}
+
+.running-lights {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: block;
+}
+
+.running-light-0 {
+  animation: blinkingText 1.8s infinite;
+}
+
+.running-light-1 {
+  animation: blinkingText 2.2s infinite;
+}
+
+.running-light-2 {
+  animation: blinkingText 2s infinite;
+}
+
+@keyframes blinkingText {
+  0% {
+    background-color: rgb(0, 157, 255);
+    box-shadow: inset -1px 0 0 #50c3ed, 1px 1px 0 #50c3ed;
+  }
+  50% {
+    box-shadow: inset -1px 0 0 #c8cfd4, 1px 1px 0 #c8cfd4;
+    background-color: #f36955;
+  }
+  100% {
+    background-color: rgb(0, 157, 255);
+    box-shadow: inset -1px 0 0 #50c3ed, 1px 1px 0 #50c3ed;
+  }
 }
 
 .main {
@@ -212,10 +324,6 @@ export default {
   position: relative;
   width: 400px;
   height: 400px;
-}
-
-.machine-movement {
-  animation: l 0.05s ease-in-out infinite alternate;
 }
 
 .l,
@@ -410,10 +518,6 @@ export default {
 .s {
   animation: none;
   z-index: -100;
-}
-
-.shadow-movement {
-  animation: shadow 0.05s ease-in-out infinite alternate;
 }
 
 .s__shadow {
