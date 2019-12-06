@@ -101,7 +101,7 @@ export default {
   computed: {
     buttonStyle() {
       return {
-        "--color": this.isSpinning ? "blue" : "#f36955",
+        "--color": this.isSpinning ? "green" : "#f36955",
         "--color-hover": "#434343"
       };
     },
@@ -126,7 +126,12 @@ export default {
       this.isSpinning = false;
       timeline.play();
       timeline.to(box, 0.9, { rotation: 30, ease: Power1.easeIn });
-      timeline.to(box, 0.3, { rotation: 360, repeat: -1, pause: false }, "-=2");
+      timeline.to(
+        box,
+        0.3,
+        { rotation: 360, repeat: -1, paused: false },
+        "-=2"
+      );
       timeline.to(box, 4, { rotation: 1 }, "-=5");
     },
     spinStop() {
