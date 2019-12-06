@@ -7,35 +7,25 @@
     />
     <button @click="toggleOnOff()">On/Off</button>
     <div class="main">
-      <div class="l" :style="[!isSpinning ? { animationDuration: '0.05s' } : null]">
+      <div
+        class="l"
+        :style="[!isSpinning ? { animationDuration: '0.05s' } : null]"
+      >
         <div class="l__face l__face--front">
           <div class="l__control"></div>
           <div class="l__control"></div>
           <div class="l__buttons">
-            <div class="l__button" v-for="(item, index) in runningLights" v-bind:key="item">
-              <span v-if="!isSpinning" :class="['running-lights', `running-light-${index}`]"></span>
+            <div
+              class="l__button"
+              v-for="(item, index) in runningLights"
+              v-bind:key="item"
+            >
+              <span
+                v-if="!isSpinning"
+                :class="['running-lights', `running-light-${index}`]"
+              ></span>
             </div>
           </div>
-          <!-- <div class="l__buttons">
-            <div class="l__button">
-              <span
-                v-if="!isSpinning"
-                class="running-lights running-light-0"
-              ></span>
-            </div>
-            <div class="l__button">
-              <span
-                v-if="!isSpinning"
-                class="running-lights running-light-1"
-              ></span>
-            </div>
-            <div class="l__button">
-              <span
-                v-if="!isSpinning"
-                class="running-lights running-light-2"
-              ></span>
-            </div>
-          </div>-->
           <div class="l__c1">
             <div class="l__c2">
               <div ref="box" class="l__clothes">
