@@ -1,32 +1,19 @@
 <template>
   <div>
-    <div class="ctrl">
-      <span v-show="!isSpinning" class="nortification animateOpen">{{
-        notificationStart
-      }}</span>
-      <span v-show="isSpinning" class="nortification animateOpen">{{
-        notificationEnd
-      }}</span>
-    </div>
+    <Notification
+      v-bind:isSpinning="isSpinning"
+      notificationText1="Dryer Running!"
+      notificationText2="Finished!"
+    />
     <button @click="toggleOnOff()">On/Off</button>
     <div class="main">
-      <div
-        class="l"
-        :style="[!isSpinning ? { animationDuration: '0.05s' } : null]"
-      >
+      <div class="l" :style="[!isSpinning ? { animationDuration: '0.05s' } : null]">
         <div class="l__face l__face--front">
           <div class="l__control"></div>
           <div class="l__control"></div>
           <div class="l__buttons">
-            <div
-              class="l__button"
-              v-for="(item, index) in runningLights"
-              v-bind:key="item"
-            >
-              <span
-                v-if="!isSpinning"
-                :class="['running-lights', `running-light-${index}`]"
-              ></span>
+            <div class="l__button" v-for="(item, index) in runningLights" v-bind:key="item">
+              <span v-if="!isSpinning" :class="['running-lights', `running-light-${index}`]"></span>
             </div>
           </div>
           <!-- <div class="l__buttons">
@@ -48,7 +35,7 @@
                 class="running-lights running-light-2"
               ></span>
             </div>
-          </div> -->
+          </div>-->
           <div class="l__c1">
             <div class="l__c2">
               <div ref="box" class="l__clothes">
@@ -85,6 +72,7 @@ import {
   Linear,
   Expo
 } from "gsap";
+import Notification from "./Notification";
 function range(start, end) {
   return Array(end - start + 1)
     .fill()
@@ -94,13 +82,14 @@ function range(start, end) {
 
 export default {
   name: "DryerAnimation",
+  components: {
+    Notification
+  },
   props: {
     msg: String
   },
   data() {
     return {
-      notificationText1: "Dryer Running!",
-      notificationText2: "Finished!",
       clothes: "l__clothes",
       isSpinning: true,
       /* setTimeout */
@@ -133,12 +122,6 @@ export default {
       const { box } = this.$refs;
       const timeline = new TimelineLite();
       return { box, timeline };
-    },
-    notificationStart() {
-      return this.notificationText1;
-    },
-    notificationEnd() {
-      return this.notificationText2;
     }
   },
   methods: {
@@ -226,62 +209,6 @@ export default {
 /* :root {
   font-size: calc(48px + (60 - 48) * (100vw - 320px) / (1024 - 320));
 } */
-
-.ctrl {
-  width: 100%;
-  position: relative;
-  transform: rotate3d(5, 8, 0, 0.1turn);
-}
-
-.nortification {
-  display: block;
-  font-family: Comic Sans MS, Comic Sans, cursive;
-  font-size: 14px;
-  width: 180px;
-  padding: 5px 0;
-  position: absolute;
-  top: 0;
-  left: 50%;
-  margin-left: -90px;
-  box-sizing: border-box;
-  border-radius: 15px;
-  background-color: #fff;
-  color: #85d9b5;
-  font-weight: bold;
-  text-align: center;
-  box-shadow: 3px 0 0 rgba(0, 0, 0, 0.2), 2px -3px 0 #d3fffd;
-}
-
-.animateOpen {
-  -webkit-animation: moveOpen 4s;
-  /* -webkit-animation-iteration-count: infinite; */
-  -webkit-animation-fill-mode: forwards;
-}
-
-/* Safari and Chrome */
-@keyframes moveOpen {
-  from {
-    -webkit-transform: translate(0, -100px);
-  }
-  10% {
-    -webkit-transform: translate(0, 20px);
-  }
-  12% {
-    -webkit-transform: translate(0, 22px);
-  }
-  16% {
-    -webkit-transform: translate(0, 20px);
-  }
-  80% {
-    -webkit-transform: translate(0, 20px);
-  }
-  85% {
-    -webkit-transform: translate(0, 25px);
-  }
-  to {
-    -webkit-transform: translate(0, -100vh);
-  }
-}
 
 .running-lights {
   width: 100%;
