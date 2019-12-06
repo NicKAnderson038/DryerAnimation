@@ -23,7 +23,7 @@ git commit -m 'deploy'
 # if you are deploying to https://<USERNAME>.github.io/<REPO>
 # git push -f git@github.com:nickanderson038/DryerAnimation.git master:gh-pages
 
-git push -f https://nickanderson038.github.io/DryerAnimation.git master:gh-pages
+git push -f https://nickanderson038.github.io/DryerAnimation/tree/gh-pages
 
 cd -
 
