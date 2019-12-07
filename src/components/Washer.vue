@@ -58,6 +58,8 @@ function range(start, end) {
     .map((_, idx) => start + idx)
     .reverse();
 }
+const path = "./Beep-Ping-SoundBible.com-217088958.mp3";
+const audio = new Audio(path);
 
 export default {
   name: "Washer",
@@ -120,6 +122,7 @@ export default {
     spinStop() {
       const { box } = this.spin;
       this.isSpinning = true;
+      audio.play();
       TweenLite.to(box, 0.6, {
         rotation: "+=480",
         ease: Linear.easeOut,
