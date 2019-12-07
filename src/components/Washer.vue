@@ -10,7 +10,7 @@
       class="btn-sample"
       :style="customProperties"
       @click="toggleOnOff()"
-      >{{ isSpinning ? "ON" : "OFF" }}</a
+      >{{ isSpinning ? 'ON' : 'OFF' }}</a
     >
     <div class="main">
       <div
@@ -47,35 +47,36 @@
 </template>
 
 <script>
-import { gsap, TimelineLite, TweenLite, TweenMax, Power1, Linear } from "gsap";
-gsap.registerPlugin(TweenLite);
-import Notification from "./Notification";
-import WasherLights from "./WasherLights";
+import { gsap, TimelineLite, TweenLite, TweenMax, Power1, Linear } from 'gsap'
+gsap.registerPlugin(TweenLite)
+import Notification from './Notification'
+import WasherLights from './WasherLights'
 
 function range(start, end) {
   return Array(end - start + 1)
     .fill()
     .map((_, idx) => start + idx)
-    .reverse();
+    .reverse()
 }
-const path = "./Beep-Ping-SoundBible.com-217088958.mp3";
-const audio = new Audio(path);
+const path = './audio/Electronic_Chime-KevanGC-495939803.mp3'
+const audio = new Audio(path)
 
 export default {
-  name: "Washer",
+  name: 'Washer',
   components: {
     Notification,
-    WasherLights
+    WasherLights,
   },
   props: {
-    msg: String
+    msg: String,
+    soundOff: Boolean,
   },
   data() {
     return {
-      clothes: "l__clothes",
+      clothes: 'l__clothes',
       isSpinning: true,
       /* setTimeout */
-      animate: "0.8s",
+      animate: '0.8s',
       spinner: range(3, 8),
       currentMsgId: 0,
       currentMessage: [],
@@ -84,103 +85,103 @@ export default {
       maxVisible: 4,
       startIndexVis: 0,
       endIndexVis: 0,
-      start: true
-    };
+      start: true,
+    }
   },
   created() {
-    this.endIndexVis = this.maxVisible;
+    this.endIndexVis = this.maxVisible
   },
   mounted() {
-    this.spinStart();
+    this.spinStart()
   },
   computed: {
     customProperties() {
       return {
-        "--color": this.isSpinning ? "green" : "#f36955",
-        "--color-hover": "#434343",
-        "--animation-iteration-count": this.isSpinning ? "3" : "infinite",
-        "--animation-duration": this.isSpinning ? "0.9s" : "0.6s",
-        "--animation-timing-function": this.isSpinning ? "ease-out" : "ease-in"
-      };
+        '--color': this.isSpinning ? 'green' : '#f36955',
+        '--color-hover': '#434343',
+        '--animation-iteration-count': this.isSpinning ? '3' : 'infinite',
+        '--animation-duration': this.isSpinning ? '0.9s' : '0.6s',
+        '--animation-timing-function': this.isSpinning ? 'ease-out' : 'ease-in',
+      }
     },
     visibleMessages() {
-      return this.batch(this.sentMessages);
+      return this.batch(this.sentMessages)
     },
     spin() {
-      const { box } = this.$refs;
-      return { box };
-    }
+      const { box } = this.$refs
+      return { box }
+    },
   },
   methods: {
     toggleOnOff() {
-      this.isSpinning ? this.spinStart() : this.spinStop();
+      this.isSpinning ? this.spinStart() : this.spinStop()
     },
     spinStart() {
-      const { box } = this.spin;
-      this.isSpinning = false;
+      const { box } = this.spin
+      this.isSpinning = false
     },
     spinStop() {
-      const { box } = this.spin;
-      this.isSpinning = true;
-      audio.play();
+      const { box } = this.spin
+      this.isSpinning = true
+      if (!this.soundOff) audio.play()
       TweenLite.to(box, 0.6, {
-        rotation: "+=480",
+        rotation: '+=480',
         ease: Linear.easeOut,
-        yoyo: true
-      });
+        yoyo: true,
+      })
     },
     /* TIMER - Not using */
     startSendingMessages() {
-      this.start = true;
-      console.log("startSendingMessages called", this.start);
-      this.sendMessages();
+      this.start = true
+      console.log('startSendingMessages called', this.start)
+      this.sendMessages()
     },
     stopSendingMessages() {
-      this.start = false;
-      console.log(this.start, "so stop");
+      this.start = false
+      console.log(this.start, 'so stop')
     },
     delay(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+      return new Promise(resolve => setTimeout(resolve, ms))
     },
     async sendMessages() {
       if (this.start) {
         if (this.currentMsgId < this.spinner.length) {
-          const nextMsgId = this.currentMsgId;
-          await this.sendNextMessage(nextMsgId);
-          this.sendMessages();
+          const nextMsgId = this.currentMsgId
+          await this.sendNextMessage(nextMsgId)
+          this.sendMessages()
         } else {
-          console.log("No more messages to send!");
-          this.stopSendingMessages();
+          console.log('No more messages to send!')
+          this.stopSendingMessages()
         }
       }
     },
     async sendNextMessage(nextMsgId) {
-      this.currentMessage = this.spinner.slice(this.currentMsgId, nextMsgId);
-      this.currentMsgId++;
-      console.log("currentMsgId updated:", this.currentMsgId, nextMsgId);
-      await this.delay(1000 * this.spinner[nextMsgId]);
-      this.animate = `0.${this.spinner[nextMsgId]}s`;
+      this.currentMessage = this.spinner.slice(this.currentMsgId, nextMsgId)
+      this.currentMsgId++
+      console.log('currentMsgId updated:', this.currentMsgId, nextMsgId)
+      await this.delay(1000 * this.spinner[nextMsgId])
+      this.animate = `0.${this.spinner[nextMsgId]}s`
       if (this.sentMessages.length >= this.maxVisible) {
-        this.startIndexVis++;
-        this.endIndexVis++;
+        this.startIndexVis++
+        this.endIndexVis++
       }
-      return this.sentMessages.push(this.currentMessage[0]);
+      return this.sentMessages.push(this.currentMessage[0])
     },
     // Display messages in batches of maxVisible size
     batch(sentMsgs) {
-      return sentMsgs.slice(this.startIndexVis, this.endIndexVis);
+      return sentMsgs.slice(this.startIndexVis, this.endIndexVis)
     },
     reset() {
-      this.start = false;
-      console.log("reset!");
-      this.currentMsgId = 0;
-      this.currentMessage = [];
-      this.sentMessages = [];
-      this.startIndexVis = 0;
-      this.endIndexVis = this.maxVisible;
-    }
-  }
-};
+      this.start = false
+      console.log('reset!')
+      this.currentMsgId = 0
+      this.currentMessage = []
+      this.sentMessages = []
+      this.startIndexVis = 0
+      this.endIndexVis = this.maxVisible
+    },
+  },
+}
 </script>
 
 <style scoped>
@@ -305,7 +306,7 @@ export default {
 
 .l__c2::before,
 .s__c2::before {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 20px;
   left: calc(50% - 100px);
@@ -321,7 +322,7 @@ export default {
 
 .l__c2::after,
 .s__c2::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 30px;
   left: calc(50% - 40px);

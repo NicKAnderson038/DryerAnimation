@@ -1,18 +1,21 @@
 <template>
   <div>
-    <Washer msg="Welcome to Your Vue.js App" />
+    <Washer msg="Welcome to Your Vue.js App" v-bind:soundOff="soundOff" />
   </div>
 </template>
 
 <script>
-import Washer from "./components/Washer.vue";
+import Washer from './components/Washer.vue'
 
 export default {
-  name: "app",
+  name: 'app',
   components: {
-    Washer
-  }
-};
+    Washer,
+  },
+  props: {
+    soundOff: Boolean,
+  },
+}
 </script>
 
 <style>
