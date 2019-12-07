@@ -1,8 +1,8 @@
-# Dryer Animation
+# Washer - Spin Dry Animation
 
-### Dryer animation with JS, CSS & HTML
+### Washer animation with JS, CSS & HTML
 
-1. Interactive <a href="https://nickanderson038.github.io/DryerAnimation/" target="_blank">Dryer</a> animation!
+1. Interactive <a href="https://nickanderson038.github.io/DryerAnimation/" target="_blank">Washer</a> animation!
 
 2. Based on this <a href="https://codepen.io/ricardoolivaalonso/pen/oNNoPrg?editors=1100" target="_blank">original</a> css/html animation by Ricardo Oliva Alonso.
 

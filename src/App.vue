@@ -1,16 +1,16 @@
 <template>
   <div>
-    <Dryer msg="Welcome to Your Vue.js App" />
+    <Washer msg="Welcome to Your Vue.js App" />
   </div>
 </template>
 
 <script>
-import Dryer from "./components/Dryer.vue";
+import Washer from "./components/Washer.vue";
 
 export default {
   name: "app",
   components: {
-    Dryer
+    Washer
   }
 };
 </script>

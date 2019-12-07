@@ -2,13 +2,13 @@
   <div>
     <Notification
       v-bind:isSpinning="isSpinning"
-      notificationText1="Dryer Running!"
+      notificationText1="Washer Running!"
       notificationText2="Finished!"
     />
     <a
       type="button"
       class="btn-sample"
-      :style="buttonStyle"
+      :style="customProperties"
       @click="toggleOnOff()"
       >{{ isSpinning ? "ON" : "OFF" }}</a
     >
@@ -20,21 +20,10 @@
         <div class="l__face l__face--front">
           <div class="l__control"></div>
           <div class="l__control"></div>
-          <div class="l__buttons">
-            <div
-              class="l__button"
-              v-for="(item, index) in runningLights"
-              v-bind:key="item"
-            >
-              <span
-                v-if="!isSpinning"
-                :class="['running-lights', `running-light-${index}`]"
-              ></span>
-            </div>
-          </div>
+          <WasherLights v-bind:isSpinning="isSpinning" />
           <div class="l__c1">
             <div class="l__c2">
-              <div ref="box" class="l__clothes">
+              <div ref="box" class="l__clothes" :style="customProperties">
                 <div class="l__clothes-i"></div>
                 <div class="l__clothes-i"></div>
               </div>
@@ -58,8 +47,11 @@
 </template>
 
 <script>
-import { TimelineLite, Power1, Linear } from "gsap";
+import { gsap, TimelineLite, TweenLite, TweenMax, Power1, Linear } from "gsap";
+gsap.registerPlugin(TweenLite);
 import Notification from "./Notification";
+import WasherLights from "./WasherLights";
+
 function range(start, end) {
   return Array(end - start + 1)
     .fill()
@@ -68,9 +60,10 @@ function range(start, end) {
 }
 
 export default {
-  name: "DryerAnimation",
+  name: "Washer",
   components: {
-    Notification
+    Notification,
+    WasherLights
   },
   props: {
     msg: String
@@ -99,22 +92,21 @@ export default {
     this.spinStart();
   },
   computed: {
-    buttonStyle() {
+    customProperties() {
       return {
         "--color": this.isSpinning ? "green" : "#f36955",
-        "--color-hover": "#434343"
+        "--color-hover": "#434343",
+        "--animation-iteration-count": this.isSpinning ? "3" : "infinite",
+        "--animation-duration": this.isSpinning ? "0.9s" : "0.6s",
+        "--animation-timing-function": this.isSpinning ? "ease-out" : "ease-in"
       };
     },
     visibleMessages() {
       return this.batch(this.sentMessages);
     },
-    runningLights() {
-      return ["one", "two", "three"];
-    },
     spin() {
       const { box } = this.$refs;
-      const timeline = new TimelineLite();
-      return { box, timeline };
+      return { box };
     }
   },
   methods: {
@@ -122,31 +114,17 @@ export default {
       this.isSpinning ? this.spinStart() : this.spinStop();
     },
     spinStart() {
-      const { box, timeline } = this.spin;
+      const { box } = this.spin;
       this.isSpinning = false;
-      timeline.play();
-      timeline.to(box, 0.9, { rotation: 30, ease: Power1.easeIn });
-      timeline.to(
-        box,
-        0.3,
-        { rotation: 360, repeat: -1, paused: false },
-        "-=2"
-      );
-      timeline.to(box, 4, { rotation: 1 }, "-=5");
     },
     spinStop() {
-      const { box, timeline } = this.spin;
+      const { box } = this.spin;
       this.isSpinning = true;
-      // timeline.pause();
-      timeline.to(
-        box,
-        0.3,
-        {
-          rotation: 480,
-          ease: Linear.easeOut
-        },
-        timeline.clear()
-      );
+      TweenLite.to(box, 0.6, {
+        rotation: "+=480",
+        ease: Linear.easeOut,
+        yoyo: true
+      });
     },
     /* TIMER - Not using */
     startSendingMessages() {
@@ -223,40 +201,6 @@ export default {
   -moz-box-shadow: 0px 5px 40px -10px rgba(0, 0, 0, 0.57);
   box-shadow: 5px 40px -10px rgba(0, 0, 0, 0.57);
   transition: all 0.4s ease 0s;
-}
-
-.running-lights {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  display: block;
-}
-
-.running-light-0 {
-  animation: blinkingText 1.8s infinite;
-}
-
-.running-light-1 {
-  animation: blinkingText 2.2s infinite;
-}
-
-.running-light-2 {
-  animation: blinkingText 2s infinite;
-}
-
-@keyframes blinkingText {
-  0% {
-    background-color: rgb(190, 224, 245);
-    box-shadow: inset -1px 0 0 #50c3ed, 1px 1px 0 #50c3ed;
-  }
-  50% {
-    box-shadow: inset -1px 0 0 #c8cfd4, 1px 1px 0 #c8cfd4;
-    background-color: #f36955;
-  }
-  100% {
-    background-color: rgb(0, 157, 255);
-    box-shadow: inset -1px 0 0 #50c3ed, 1px 1px 0 #50c3ed;
-  }
 }
 
 .main {
@@ -405,28 +349,6 @@ export default {
   left: 55px;
 }
 
-.l__button,
-.s__button {
-  position: absolute;
-  top: 16px;
-  left: 100px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  box-shadow: inset -1px 0 0 #c8cfd4, 1px 1px 0 #c8cfd4;
-  background-color: #f36955;
-}
-
-.l__button:nth-of-type(2),
-.s__button:nth-of-type(2) {
-  left: 110px;
-}
-
-.l__button:nth-of-type(3),
-.s__button:nth-of-type(3) {
-  left: 120px;
-}
-
 .l__clothes,
 .s__clothes {
   position: absolute;
@@ -436,7 +358,11 @@ export default {
   height: 10px;
   z-index: 100;
   /* animation: clothes 0.3s linear infinite; */
-  animation: clothes linear infinite;
+  /* animation: clothes linear infinite; */
+  animation-name: clothes;
+  animation-timing-function: var(--animation-timing-function);
+  animation-duration: var(--animation-duration);
+  animation-iteration-count: var(--animation-iteration-count);
 }
 
 .l__clothes-i,
